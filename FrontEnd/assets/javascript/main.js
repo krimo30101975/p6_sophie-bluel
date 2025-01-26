@@ -1,5 +1,6 @@
 // Fonction asynchrone pour récupérer des "works" (des données, comme des projets ou des tâches)
-async function getWorks() {
+async function getWorks(filter) {
+    document.querySelector(".gallery").innerHTML = "";
     const url = "http://localhost:5678/api/works"; // Déclaration de l'URL de l'API qui sera appelée
   
     try {
@@ -11,13 +12,16 @@ async function getWorks() {
       }
 
       const json = await response.json(); // Convertit la réponse JSON en un objet JavaScript exploitable
-
-      // console.log(json);
-
-      for (let i = 0; i < json.length; i++) {
-        setFigure(json[i])
+      if (filter) {
+        const filtred = json.filter((data) => data.categoryId === filter);
+        for (let i = 0; i < filtred.length; i++) {
+          setFigure(filtred[i]);
+        }
+      } else {
+        for (let i = 0; i < json.length; i++) {
+            setFigure(json[i]);
+          }
       }
-
     } catch (error) {
       console.error("Erreur lors de la requête :", error.message); // Capture et affiche toute erreur survenue lors de la requête ou du traitement
     } finally {
@@ -46,9 +50,6 @@ async function getCategories() {
       }
 
       const json = await response.json(); // Convertit la réponse JSON en un objet JavaScript exploitable
-
-      console.log(json);
-
       for (let i = 0; i < json.length; i++) {
         setFilter(json[i])
       }
@@ -62,7 +63,11 @@ async function getCategories() {
 getCategories();
 
 function setFilter(data) {
+    console.log(data);
     const div = document.createElement("div");
+    div.cassName = data.id;
+    div.addEventListener("click", () => getWorks(data.id));
     div.innerHTML = `${data.name}`; 
     document.querySelector(".filtreGallery").append(div);
 }
+document.querySelector(".tous").addEventListener("click", () => getWorks());
