@@ -12,7 +12,7 @@ async function getWorks() {
 
       const json = await response.json(); // Convertit la réponse JSON en un objet JavaScript exploitable
 
-      console.log(json);
+      // console.log(json);
 
       for (let i = 0; i < json.length; i++) {
         setFigure(json[i])
@@ -32,4 +32,37 @@ function setFigure(data) {
                     <figcaption>${data.title}</figcaption>`; 
     document.querySelector(".gallery").append(figure);
 }
+
+// Fonction asynchrone pour récupérer des "categories" (des données de categories photos)
+async function getCategories() {
+    const url = "http://localhost:5678/api/categories"; // Déclaration de l'URL de l'API qui sera appelée
   
+    try {
+      const response = await fetch(url); // Effectue une requête HTTP GET vers l'URL
+  
+      // Vérifie si la réponse est valide (code HTTP 200-299)
+      if (!response.ok) {
+        throw new Error(`Response status: ${response.status}`); // Si ce n'est pas le cas, lève une erreur avec le code de statut
+      }
+
+      const json = await response.json(); // Convertit la réponse JSON en un objet JavaScript exploitable
+
+      console.log(json);
+
+      for (let i = 0; i < json.length; i++) {
+        setFilter(json[i])
+      }
+
+    } catch (error) {
+      console.error("Erreur lors de la requête :", error.message); // Capture et affiche toute erreur survenue lors de la requête ou du traitement
+    } finally {
+      console.log("Requête terminée"); // Ce bloc est exécuté quoi qu'il arrive (qu'il y ait une erreur ou non)
+    }
+}
+getCategories();
+
+function setFilter(data) {
+    const div = document.createElement("div");
+    div.innerHTML = `${data.name}`; 
+    document.querySelector(".filtreGallery").append(div);
+}
