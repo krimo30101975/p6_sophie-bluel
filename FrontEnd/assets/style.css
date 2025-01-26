@@ -127,9 +127,27 @@ li:hover {
 }
 .filtreGallery {
 	display: flex;
-	width: 70%;
-	justify-content: space-around;
-	margin: 0 auto;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 38px;
+	margin: 0 0 30px 0;
+}
+.filtreGallery > * {
+	padding: 5px 10px;
+	margin: 0 5px;
+	border: 1px solid rgba(29, 97, 84, 1);
+	color: rgba(29, 97, 84, 1);
+	border-radius: 60px;
+	font-family: 'Syne';
+	font-size: 16px;
+	font-weight: 700;
+	line-height: 19.2px;
+	cursor: pointer;
+}
+.filtreGallery > *:hover {
+	background-color: rgba(29, 97, 84, 1);
+	color: white;
 }
 .gallery {
 	width: 100%;
