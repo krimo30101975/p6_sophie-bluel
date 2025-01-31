@@ -71,3 +71,42 @@ function setFilter(data) {
     document.querySelector(".filtreGallery").append(div);
 }
 document.querySelector(".tous").addEventListener("click", () => getWorks());
+
+const input = document.querySelector("input");
+input.dataset.id = "1";
+console.log(input);
+
+// changer la couleur en select
+document.addEventListener("DOMContentLoaded", () => {
+  const filtreGallery = document.querySelector(".filtreGallery");
+
+  // Vérifier si l'élément existe
+  if (!filtreGallery) {
+    console.error("L'élément .filtreGallery est introuvable !");
+    return;
+  }
+
+  // Sélectionner tous les enfants directs de .filtreGallery
+  const children = filtreGallery.querySelectorAll("div");
+
+  // Vérifier s'il y a des enfants et activer le premier par défaut
+  if (children.length > 0) {
+    children[0].classList.add("active");
+  }
+
+  // Gestion du clic pour activer/désactiver les filtres
+  filtreGallery.addEventListener("click", (event) => {
+    if (event.target !== filtreGallery && event.target.tagName === "DIV") {
+      // Recalcule la liste des enfants au moment du clic, au cas où l'HTML a changé
+      const children = filtreGallery.querySelectorAll("div");
+
+      // Supprime la classe active de tous les enfants
+      children.forEach(c => c.classList.remove("active"));
+
+      // Ajoute la classe active au nouvel élément cliqué
+      event.target.classList.add("active");
+    }
+  });
+});
+
+
