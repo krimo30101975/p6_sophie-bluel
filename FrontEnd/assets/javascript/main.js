@@ -76,7 +76,7 @@ const input = document.querySelector("input");
 input.dataset.id = "1";
 console.log(input);
 
-// changer la couleur en select
+// changer la couleur en selecteur
 document.addEventListener("DOMContentLoaded", () => {
   const filtreGallery = document.querySelector(".filtreGallery");
 

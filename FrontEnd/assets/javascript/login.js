@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const errorMessage = data.message ? data.message.toLowerCase() : "";
 
         if (errorMessage.includes("password")) {
-          messageContainer.textContent = "Mot de passe incorrect.";
+          messageContainer.textContent = "Identifiants incorrects.";
           passInput.style.border = "2px solid red";
         } else if (errorMessage.includes("user not found") || errorMessage.includes("email")) {
           messageContainer.textContent = "Adresse e-mail incorrecte.";
