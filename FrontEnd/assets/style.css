@@ -53,10 +53,33 @@ body {
 	font-family: 'Work Sans';
 	font-size: 14px;
 }
+.edit {
+	display: none !important; /* Cache par défaut */
+	justify-content: center;
+	align-items: center;
+	text-align: center;
+	width: 100%;
+	height: 59px;
+	color: white;
+	background-color: black;
+	font-family: 'Work Sans';
+	font-size: 16px;
+	font-weight: 400;
+	line-height: 18.77;
+}
+.show-edit {
+	display: flex !important; /* Affiche quand on ajoute la classe */
+  }
+.edit i {
+	display: flex;
+	align-items: center;
+	width: 30px;
+	height: 30px;
+}
 header {
 	display: flex;
 	justify-content: space-between;
-	margin: 50px 0
+	margin: 59px 0
 }
 section {
 	margin: 50px 0

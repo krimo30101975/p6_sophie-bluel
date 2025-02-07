@@ -110,3 +110,16 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 
+// ********
+// changement de div edit de display none en flex
+// ********
+function displayAdminMode() {
+  if (sessionStorage.authToken) {
+    console.log("ok");
+    <div class="edit">
+      <p><i class="fa-regular fa-pen-to-square"></i>Mode édition</p>
+    </div>
+  }
+}
+displayAdminMode();
+

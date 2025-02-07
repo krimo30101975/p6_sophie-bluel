@@ -1,10 +1,9 @@
+
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.querySelector("form");
   const emailInput = document.querySelector("#email");
   const passInput = document.querySelector("#pass");
-
-  // Conteneur pour afficher les messages d'erreur
-  const messageContainer = document.createElement("div");
+  const messageContainer = document.createElement("div");// Conteneur pour afficher les messages d'erreur
   messageContainer.style.marginTop = "10px";
   form.appendChild(messageContainer);
 
@@ -37,28 +36,26 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
       const data = await response.json();
-      console.log("Réponse du serveur :", data); // <-- Ajout pour voir les erreurs retournées
+      console.log("Réponse du serveur :", data); // Ajout pour voir les erreurs retournées
 
       if (response.ok) {
         messageContainer.textContent = "Connexion réussie !";
         messageContainer.style.color = "green";
 
-        // Stocker le token dans localStorage
-        localStorage.setItem("authToken", data.token);
-
-        // Rediriger vers la page d'accueil après 2 secondes
-        setTimeout(() => {
+        localStorage.setItem("authToken", data.token); // Stocker le token dans localStorage
+       
+        setTimeout(() => {// Rediriger vers la page d'accueil après 2 secondes
           window.location.href = "index.html";
         }, 2000);
       } else {
-        // Vérifier si l'API renvoie un message d'erreur clair
-        const errorMessage = data.message ? data.message.toLowerCase() : "";
+
+        const errorMessage = data.message ? data.message.toLowerCase() : "";// Vérifier si l'API renvoie un message d'erreur clair
 
         if (errorMessage.includes("password")) {
           messageContainer.textContent = "Identifiants incorrects.";
           passInput.style.border = "2px solid red";
         } else if (errorMessage.includes("user not found") || errorMessage.includes("email")) {
-          messageContainer.textContent = "Adresse e-mail incorrecte.";
+          messageContainer.textContent = "Identifiants incorrects.";
           emailInput.style.border = "2px solid red";
         } else {
           messageContainer.textContent = "Identifiants incorrects.";
