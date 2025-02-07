@@ -114,11 +114,12 @@ document.addEventListener("DOMContentLoaded", () => {
 // changement de div edit de display none en flex
 // ********
 function displayAdminMode() {
-  if (sessionStorage.authToken) {
+  if (localStorage.authToken) {
     console.log("ok");
-    <div class="edit">
-      <p><i class="fa-regular fa-pen-to-square"></i>Mode édition</p>
-    </div>
+    const editBanner = document.createElement("div");
+    editBanner.className = "edit";
+    editBanner.innerHTML = '<p><i class="fa-regular fa-pen-to-square"></i> Mode édition</p>';
+    document.body.prepend(editBanner);
   }
 }
 displayAdminMode();

@@ -29,7 +29,16 @@ footer, header, hgroup, menu, nav, section {
 	display: block;
 }
 body {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+
 	line-height: 1;
+}
+header, main, footer {
+	max-width: 1140px;
+	width: 100%;
 }
 ol, ul {
 	list-style: none;
@@ -48,16 +57,16 @@ table {
 }
 /** end reset css**/
 body {
-	max-width: 1140px;
 	margin:auto;
 	font-family: 'Work Sans';
 	font-size: 14px;
 }
 .edit {
-	display: none !important; /* Cache par défaut */
+	display: flex;
 	justify-content: center;
 	align-items: center;
 	text-align: center;
+	flex-direction: row;
 	width: 100%;
 	height: 59px;
 	color: white;
@@ -67,14 +76,14 @@ body {
 	font-weight: 400;
 	line-height: 18.77;
 }
-.show-edit {
-	display: flex !important; /* Affiche quand on ajoute la classe */
-  }
-.edit i {
+.edit p {
 	display: flex;
-	align-items: center;
-	width: 30px;
-	height: 30px;
+	align-items: baseline;
+}
+.edit i {
+	font-size: 14px;
+	padding-right: 5px;
+	color: white;
 }
 header {
 	display: flex;
