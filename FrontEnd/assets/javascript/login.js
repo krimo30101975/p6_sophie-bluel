@@ -1,5 +1,53 @@
 
 document.addEventListener("DOMContentLoaded", () => {
+  const authLink = document.querySelector(".a_link");
+
+  if (!authLink) {
+    console.error("🚨 Erreur : L'élément .a_link est introuvable !");
+    return;
+  }
+
+  console.log("✅ Élément .a_link trouvé :", authLink);
+});
+
+
+
+document.addEventListener("DOMContentLoaded", () => {
+  const authLink = document.querySelector(".a_link");
+
+  // Vérifie si l'élément existe
+  if (!authLink) {
+    console.error("🚨 Erreur : L'élément .a_link est introuvable !");
+    return;
+  }
+
+  console.log("🔄 Vérification de la connexion...");
+
+  // Vérifie si l'utilisateur est connecté (présence du token)
+  const token = localStorage.getItem("authToken");
+
+  if (token) {
+    console.log("✅ Utilisateur connecté. Modification du lien...");
+
+    authLink.textContent = "Logout"; // Change "Login" en "Logout"
+    authLink.href = "#"; // Empêche la redirection
+
+    // Ajoute un événement pour la déconnexion
+    authLink.addEventListener("click", (event) => {
+      event.preventDefault(); // Empêche le changement de page
+      console.log("🚪 Déconnexion...");
+      localStorage.removeItem("authToken"); // Supprime le token
+      window.location.reload(); // Rafraîchit la page
+    });
+  } else {
+    console.log("❌ Aucun utilisateur connecté.");
+    authLink.textContent = "Login"; // Remet le texte à "Login"
+    authLink.href = "/FrontEnd/login.html"; // Redirection vers la page de connexion
+  }
+});
+
+
+document.addEventListener("DOMContentLoaded", () => {
   const form = document.querySelector("form");
   const emailInput = document.querySelector("#email");
   const passInput = document.querySelector("#pass");
@@ -43,7 +91,17 @@ document.addEventListener("DOMContentLoaded", () => {
         messageContainer.style.color = "green";
 
         localStorage.setItem("authToken", data.token); // Stocker le token dans localStorage
-       
+
+        const authLink = document.querySelector(".a_link");
+        if (authLink) {
+          authLink.textContent = "Logout"; // Changer le texte du lien
+          authLink.href = "#"; // Désactiver le lien vers login
+        }
+
+
+        //document.getElementById("a_link").textContent = "Logout"; // Changer le texte du lien
+        //document.getElementById("a_link").href = "#"; // Désactiver le lien vers login
+
         setTimeout(() => {// Rediriger vers la page d'accueil après 2 secondes
           window.location.href = "index.html";
         }, 2000);
