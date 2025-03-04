@@ -30,9 +30,21 @@ article, aside, details, figcaption, figure,
 footer, header, hgroup, menu, nav, section {
 	display: block;
 }
+.gallery img,
+.gallery-container img { 
+	object-fit: cover;
+	aspect-ratio: 3/4;
+}
 a {
 	text-decoration: none;
 	color: white;
+}
+.a_link {
+	font-family: 'Work Sans';
+	font-size: 5px;
+}
+.a__link__login {
+	font-weight: 600;
 }
 body {
 	display: flex;
@@ -247,8 +259,12 @@ li:hover {
 
 .gallery img {
 	width: 100%;
-
 }
+.preview-image {
+	width: auto; /* S’adapte au conteneur */
+	height: 100%;
+	object-fit: cover; /* Recadre l'image sans déformation */
+  }
 #contact {
 	width: 50%;
 	margin: auto;

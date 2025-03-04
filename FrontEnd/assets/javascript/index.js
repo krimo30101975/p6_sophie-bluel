@@ -18,7 +18,7 @@ getWorks();
 
 // Fonction pour afficher une image dans la galerie
 function setFigure(data) {
-  const figure = document.createElement("figure");; // Crée une balise figure
+  const figure = document.createElement("figure"); // Crée une balise figure
   figure.innerHTML = `<img src="${data.imageUrl}" alt="${data.title}"><figcaption>${data.title}</figcaption>`; 
   document.querySelector(".gallery").append(figure); // Ajoute l'image dans la galerie
 }
@@ -48,10 +48,14 @@ function setFilter(data) {
   div.innerHTML = `${data.name}`; 
   document.querySelector(".filtreGallery").append(div);
 }
+// Création de la div "Tous"
+const divTous = document.createElement("div");
+divTous.className = "tous";
+divTous.textContent = "Tous"; // Texte du filtre
+divTous.addEventListener("click", () => getWorks()); // Ajout de l'événement au clic
 
-document.querySelector(".tous").addEventListener("click", () => getWorks());
-const input = document.querySelector("input");//
-input.dataset.id = "1";//
+// Ajout au conteneur des filtres
+document.querySelector(".filtreGallery").prepend(divTous); // Ajoute "Tous" en premier
 
 // changer la couleur en selecteur
 document.addEventListener("DOMContentLoaded", () => {
@@ -60,20 +64,20 @@ document.addEventListener("DOMContentLoaded", () => {
     console.error("L'élément .filtreGallery est introuvable !");
     return;
   }
-  // Sélectionner tous les enfants directs de .filtreGallery
-  const children = filtreGallery.querySelectorAll("div");
-  // Vérifier s'il y a des enfants et activer le premier par défaut
-  if (children.length > 0) {
+
+  const children = filtreGallery.querySelectorAll("div"); // Sélectionner tous les enfants directs de .filtreGallery
+
+  if (children.length > 0) { // Vérifier s'il y a des enfants et activer le premier par défaut
     children[0].classList.add("active");
   }
   filtreGallery.addEventListener("click", (event) => {  // Gestion du clic pour activer/désactiver les filtres
     if (event.target !== filtreGallery && event.target.tagName === "DIV") {
-      // Recalcule la liste des enfants au moment du clic, au cas où l'HTML a changé
-      const children = filtreGallery.querySelectorAll("div");
-      // Supprime la classe active de tous les enfants
-      children.forEach(c => c.classList.remove("active"));
-      // Ajoute la classe active au nouvel élément cliqué
-      event.target.classList.add("active");
+
+      const children = filtreGallery.querySelectorAll("div"); // Recalcule la liste des enfants au moment du clic, au cas où l'HTML a changé
+
+      children.forEach(c => c.classList.remove("active")); // Supprime la classe active de tous les enfants
+
+      event.target.classList.add("active"); // Ajoute la classe active au nouvel élément cliqué
     }
   });
   function displayFiltreGallery() {
@@ -83,20 +87,21 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   displayFiltreGallery();
 });
+document
 
-// Fonction pour récupérer la taille des images de la galerie
-function getGalleryImageSize() {
-  const firstImage = document.querySelector(".gallery img"); // Choisir la première image dans la galerie
-
-  // Vérifie si l'image existe et retourne sa taille
-  if (firstImage) {
-    return {
-      width: firstImage.width,
-      height: firstImage.height
-    };
-  }
-  return { width: 0, height: 0 }; // Retourne 0, 0 si aucune image n'existe dans la galerie
-}
+//// Fonction pour récupérer la taille des images de la galerie
+//function getGalleryImageSize() {
+//  const firstImage = document.querySelector(".gallery img"); // Choisir la première image dans la galerie
+//
+//  // Vérifie si l'image existe et retourne sa taille
+//  if (firstImage) {
+//    return {
+//      width: firstImage.width,
+//      height: firstImage.height
+//    };
+//  }
+//  return { width: 0, height: 0 }; // Retourne 0, 0 si aucune image n'existe dans la galerie
+//}
 
 // Fonction pour afficher le mode édition si l'utilisateur est connecté " éddit banner ""
 function displayAdminMode() {
@@ -138,11 +143,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const title = document.createElement("h2");
     title.textContent = "Galerie photo";
-    title.style = "fontSize : 26px; font-family : 'Work Sans'; font-weight : 400; color : black; margin : 30px 0;";
+    title.style = "font-size : 26px; font-family : 'Work Sans'; font-weight : 400; color : black; margin : 20px 0;";
 
     const galleryContainer = document.createElement("div");
     galleryContainer.className = "gallery-container";
-    galleryContainer.style = "display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; width: 100%; overflow-y: auto; max-height: 400px; margin: 20px 0 20px 0;";
+    galleryContainer.style = "display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; width: 100%; overflow-y: auto; max-height: 688px; margin: 20px 0 20px 0;";
 
     // Fonction pour mettre à jour la galerie dans la modale
     function updateModalGallery() {
@@ -219,7 +224,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const addButton = document.createElement("button");
     addButton.textContent = "Ajouter une image";
     addButton.className = "add-button";
-    addButton.style = "display : flex; align-items : center; justify-content : center; cursor : pointer; color : white; background : rgba(29, 97, 84, 1); border : none; border-radius : 60px; width : 237px; height : 38px";
+    addButton.style = "font-Size : 14px; font-family : 'Syne'; font-weight : 500; display : flex; align-items : center; justify-content : center; cursor : pointer; color : white; background : rgba(29, 97, 84, 1); border : none; border-radius : 60px; width : 237px; height : 38px";
     addButton.addEventListener("click", () => {
       closeModal(modal);
       createFormModal();
@@ -251,18 +256,31 @@ document.addEventListener("DOMContentLoaded", () => {
     closeButton.style = "position: absolute; top: 22px; right: 29px; cursor: pointer; font-size: 20px;";
     closeButton.addEventListener("click", () => closeModal(modal));
 
+    // titre modal ajout image
     const sectionTitle = document.createElement("h2");
     sectionTitle.textContent = "Ajout photo";
     sectionTitle.style = "fontSize : 26px; font-family : 'Work Sans'; font-weight : 400; color : black; margin : 30px 0;";
 
     const form = document.createElement("form");
     form.className = "add-image-form";
-    form.style.cssText = "width: 420px; height: 500px; display: flex; flex-direction: column; justify-content: space-between; align-items: center;"
-    
+    form.style.cssText = "width: 100%; height: 500px; display: flex; flex-direction: column; justify-content: space-between;"
+
+    // Fonction pour récupérer la taille des images de la galerie
+    function getGalleryImageSize() {
+      const firstImage = document.querySelector(".gallery img");
+      if (firstImage) {
+        return {
+          width: firstImage.clientWidth,
+          height: firstImage.clientHeight
+        };
+      }
+      return { width: 200, height: 150 }; // Taille par défaut
+    }
+
     // Conteneur pour l’image
     const imageContainer = document.createElement("div");
     imageContainer.className = "image-container";
-    imageContainer.style = "display : flex; flex-direction: column; justify-content: space-around; align-items: center; width : 420px; height : 169px; border-radius : 3px; background-color : rgba(232, 241, 246, 1)";
+    imageContainer.style = "display : flex; flex-direction: column; justify-content: space-around; align-items: center; width : 100%; height : 169px; border-radius : 3px; background-color : rgba(232, 241, 246, 1)";
     const imageIcon = document.createElement("i");
     imageIcon.className = "fa-regular fa-image"; // Icône paysage
     imageIcon.style = "width: 76px; height : 76px; font-size : 68px; color : rgba(185, 197, 204, 1);";
@@ -311,13 +329,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const titleLabel = document.createElement("label");
     titleLabel.setAttribute("for", "titleInput");
     titleLabel.textContent = "Titre";
-    titleLabel.style = "font-Size : 14px; font-family : 'Work Sans'; font-weight : 500; color : rgba(61, 61, 61, 1);";
+    titleLabel.style = "margin-top : 20px; font-Size : 14px; line-height : 16.42px font-family : 'Work Sans'; font-weight : 500; color : rgba(61, 61, 61, 1);";
     const titleInput = document.createElement("input");
     titleInput.type = "text";
     titleInput.id = "titleInput"; 
     titleInput.style = "font-Size : 14px; font-family : 'Work Sans'; font-weight : 500; color : rgba(61, 61, 61, 1); width : 100%; height : 51px; border : none; box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.1)";
     titleInput.required = true;
-    style = "width : 100%; height : 51px; border : none; box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.1)">
     titleContainer.append(titleLabel, titleInput);
 
     // Sélection de la catégorie
@@ -326,6 +343,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const categoryLabel = document.createElement("label");
     categoryLabel.setAttribute("for", "categorySelect");
     categoryLabel.textContent = "Catégorie";
+    categoryLabel.style = "margin-top : 20px; font-Size : 14px; line-height : 16.42px; font-family : 'Work Sans'; font-weight : 500; color : rgba(61, 61, 61, 1);";
     const categorySelect = document.createElement("select");
     categorySelect.id = "categorySelect"; // Ajout de l'ID
     categorySelect.name = "category"; // Ajout du name
@@ -333,7 +351,7 @@ document.addEventListener("DOMContentLoaded", () => {
     categorySelect.style = "font-Size : 14px; font-family : 'Work Sans'; font-weight : 500; color : rgba(61, 61, 61, 1); width : 100%; height : 51px; border : none; box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.1)";
     const defaultOption = document.createElement("option");
     defaultOption.value = "";
-    defaultOption.textContent = "Choisir une catégorie";
+    defaultOption.textContent = "";
     defaultOption.disabled = true;
     defaultOption.selected = true;
     categorySelect.appendChild(defaultOption);  
@@ -360,14 +378,14 @@ document.addEventListener("DOMContentLoaded", () => {
     loadCategories();
     // LIGNE HORIZONTALE
     const separationHr = document.createElement("hr");
-    separationHr.style = "width: 100%; margin: 50px 0 40px 0";
+    separationHr.style = "width: 100%; margin: 50px 0 30px 0";
     // BOUTON VALIDER 
     const submitButton = document.createElement("button");
     submitButton.innerText = "Valider";
     submitButton.id = "submitButton"; // Ajout de l'ID
     submitButton.type = "submit";
     submitButton.disabled = true; // Désactivé au début
-    submitButton.style = "font-Size : 14px; font-family : 'Syne'; font-weight : 500;display :margin : 0, auto; flex; align-items : center; justify-content : center; cursor : pointer; color : white; border : none; border-radius : 60px; width : 237px; height : 38px;";
+    submitButton.style = "font-Size : 14px; font-family : 'Syne'; font-weight : 500; margin : 0, auto; display : flex; align-items : center; justify-content : center; cursor : pointer; color : white; border : none; border-radius : 60px; width : 237px; height : 38px; transform: translate(45%, 0%);";
     submitButton.style.backgroundColor = "rgba(167, 167, 167, 1)"; // Gris par défaut
     submitButton.style.color = "white";
 
@@ -438,13 +456,17 @@ document.addEventListener("DOMContentLoaded", () => {
   
     return modalOverlay;
   }
-
-  // Bouton pour ouvrir la Modale Galerie
-  const editButton = document.createElement("button");
-  editButton.className = "edit__button";
-  editButton.innerHTML = '<p><i class="fa-regular fa-pen-to-square"></i> Modifier</p>';
-  editButton.style = "margin-left: 10px; border: none; background-color: white; cursor: pointer;";
-  editButton.addEventListener("click", createGalleryModal); // Ajouter un événement au bouton
-
-  document.querySelector("#portfolio h2").appendChild(editButton);
+  // Fonction pour afficher le mode édition si l'utilisateur est connecté " éddit banner ""
+  function displayAdminMode() {
+    if (localStorage.authToken) {
+    // Bouton pour ouvrir la Modale Galerie
+    const editButton = document.createElement("button");
+    editButton.className = "edit__button";
+    editButton.innerHTML = '<p><i class="fa-regular fa-pen-to-square"></i> Modifier</p>';
+    editButton.style = "margin: 70px 0 50px 10px; border: none; background-color: white; cursor: pointer;";
+    editButton.addEventListener("click", createGalleryModal); // Ajouter un événement au bouton
+    document.querySelector("#portfolio h2").appendChild(editButton);
+    }
+  }
+  displayAdminMode();
 });
