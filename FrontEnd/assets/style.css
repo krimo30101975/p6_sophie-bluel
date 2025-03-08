@@ -40,7 +40,9 @@ a {
 	text-decoration: none;
 	color: black;
 }
-.a__link__login {
+.link_login {
+	font-family: 'Work Sans';
+	font-size: 0.2em;
 	font-weight: 600;
 }
 body {

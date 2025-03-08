@@ -104,7 +104,7 @@ document.addEventListener("DOMContentLoaded", () => {
   modalOverlay.className = "modal__overlay";
   modalOverlay.style = "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.3); display: none; justify-content: center; align-items: center;";
   document.body.append(modalOverlay);
-  //
+  
   // Fonction pour créer la Modale galerie
   function closeModal(modal) {
     modal.remove(); // Supprime la modale actuelle
@@ -114,9 +114,18 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   function createGalleryModal() {
     modalOverlay.style.display = "flex";
+
     const modal = document.createElement("div");
     modal.className = "modal";
     modal.style.cssText = "width: 610px; height: 688px; background-color: white; border-radius: 10px; padding: 40px 80px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2); display: flex; flex-direction: column; justify-content: space-between; align-items: center; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);";
+
+    // Fermer la modale en cliquant sur l'overlay
+    modalOverlay.addEventListener("click", (event) => {
+        if (event.target === modalOverlay) { 
+            modal.style.display = "none"; // Cache la modale
+            modalOverlay.style.display = "none"; // Cache l'overlay
+        }
+    });
 
     // Bouton fermeture
     const closeButton = document.createElement("span");
@@ -265,12 +274,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const imageContainer = document.createElement("div");
     imageContainer.className = "image-container";
     imageContainer.style = "display : flex; flex-direction: column; justify-content: space-around; align-items: center; width : 100%; height : 169px; border-radius : 3px; background-color : rgba(232, 241, 246, 1)";
+
     const imageIcon = document.createElement("i");
     imageIcon.className = "fa-regular fa-image"; // Icône paysage
     imageIcon.style = "width: 76px; height : 76px; font-size : 68px; color : rgba(185, 197, 204, 1);";
+
     const previewImage = document.createElement("img");
     previewImage.className = "preview-image";
     previewImage.style.display = "none";
+
     const fileInput = document.createElement("input");
     fileInput.type = "file";
     fileInput.accept = "image/*";
@@ -278,12 +290,13 @@ document.addEventListener("DOMContentLoaded", () => {
     fileInput.name = "image"; // Ajout du name
     fileInput.style.display = "none";
     fileInput.required = true;
+
     const uploadLabel = document.createElement("label");
     uploadLabel.setAttribute("for", "fileInput"); // Lier le label à l'input
     uploadLabel.className = "upload-label";
     uploadLabel.textContent = "+ Ajouter photo";
-    //uploadLabel.appendChild(fileInput);
     uploadLabel.style = "display : flex; align-items : center; justify-content : center; cursor : pointer; font-Size : 14px; font-family : 'Work Sans'; font-weight : 500; color : rgba(48, 102, 133, 1); background : rgba(203, 214, 220, 1); border : none; border-radius : 60px; width : 237px; height : 38px;";
+
     const uploadParagraph = document.createElement("p");
     uploadParagraph.textContent = "JPG, PNG : 4mo max";
     uploadParagraph.style = "font-Size : 10px; font-family : 'Work Sans'; font-weight : 400; color : rgba(68, 68, 68, 1);";
@@ -310,10 +323,12 @@ document.addEventListener("DOMContentLoaded", () => {
     // Champ titre
     const titleContainer = document.createElement("div");
     titleContainer.className = "input-container";
+
     const titleLabel = document.createElement("label");
     titleLabel.setAttribute("for", "titleInput");
     titleLabel.textContent = "Titre";
     titleLabel.style = "margin-top : 20px; font-Size : 14px; line-height : 16.42px font-family : 'Work Sans'; font-weight : 500; color : rgba(61, 61, 61, 1);";
+
     const titleInput = document.createElement("input");
     titleInput.type = "text";
     titleInput.id = "titleInput"; 
@@ -324,15 +339,18 @@ document.addEventListener("DOMContentLoaded", () => {
     // Sélection de la catégorie
     const categoryContainer = document.createElement("div");
     categoryContainer.className = "input-container";
+
     const categoryLabel = document.createElement("label");
     categoryLabel.setAttribute("for", "categorySelect");
     categoryLabel.textContent = "Catégorie";
     categoryLabel.style = "margin-top : 20px; font-Size : 14px; line-height : 16.42px; font-family : 'Work Sans'; font-weight : 500; color : rgba(61, 61, 61, 1);";
+    
     const categorySelect = document.createElement("select");
     categorySelect.id = "categorySelect"; // Ajout de l'ID
     categorySelect.name = "category"; // Ajout du name
     categorySelect.required = true;
     categorySelect.style = "font-Size : 14px; font-family : 'Work Sans'; font-weight : 500; color : rgba(61, 61, 61, 1); width : 100%; height : 51px; border : none; box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.1)";
+    
     const defaultOption = document.createElement("option");
     defaultOption.value = "";
     defaultOption.textContent = "";

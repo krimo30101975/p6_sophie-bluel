@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const authLink = document.querySelector(".a_link");
+  const authLink = document.querySelector(".a_login");
   const token = localStorage.getItem("authToken");
 
   if (authLink) {
@@ -8,6 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (token) {
       authLink.textContent = "logout";
+      authLink.style.fontSize = "1.2em";
       authLink.href = "#";
       authLink.addEventListener("click", (event) => {
         event.preventDefault();
@@ -18,8 +19,6 @@ document.addEventListener("DOMContentLoaded", () => {
       authLink.textContent = "login";
       authLink.href = "/FrontEnd/login.html";
     }
-  } else {
-    console.error("🚨 Erreur : L'élément .a_link est introuvable !");
   }
 
   // Gestion du formulaire de connexion
@@ -54,9 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
         body: JSON.stringify({ email, password }),
       });
 
-      console.log("Statut HTTP :", response.status);
       const data = await response.json();
-      console.log("Réponse JSON :", data);
 
       if (response.ok) {
         localStorage.setItem("authToken", data.token);
