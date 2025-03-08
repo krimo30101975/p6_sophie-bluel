@@ -30,18 +30,15 @@ article, aside, details, figcaption, figure,
 footer, header, hgroup, menu, nav, section {
 	display: block;
 }
-.gallery img,
-.gallery-container img { 
-	object-fit: cover;
-	aspect-ratio: 3/4;
-}
 a {
 	text-decoration: none;
 	color: white;
 }
 .a_link {
 	font-family: 'Work Sans';
-	font-size: 5px;
+	font-size: 1.2em;
+	text-decoration: none;
+	color: black;
 }
 .a__link__login {
 	font-weight: 600;
@@ -119,7 +116,6 @@ body {
 	overflow: auto;
 	background-color: white;
 	max-width: calc(100vh - 20px);
-	max-width: calc(100vh - 20px);
 	width: 600px;
 	height: 400px;
 	padding: 4px;
@@ -132,12 +128,6 @@ header {
 }
 section {
 	margin: 50px 0
-}
-
-.a_link {
-	font-size: 1.2em;
-	text-decoration: none;
-	color: black;
 }
 .oubliPass {
 	color: rgba(61, 61, 61, 1);
@@ -256,9 +246,11 @@ li:hover {
 	grid-column-gap: 20px;
 	grid-row-gap: 20px;
 }
-
-.gallery img {
+.gallery img,
+.gallery-container img { 
 	width: 100%;
+	object-fit: cover;
+	aspect-ratio: 3/4;
 }
 .preview-image {
 	width: auto; /* S’adapte au conteneur */

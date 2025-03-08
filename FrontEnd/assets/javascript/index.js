@@ -87,22 +87,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   displayFiltreGallery();
 });
-document
-
-//// Fonction pour récupérer la taille des images de la galerie
-//function getGalleryImageSize() {
-//  const firstImage = document.querySelector(".gallery img"); // Choisir la première image dans la galerie
-//
-//  // Vérifie si l'image existe et retourne sa taille
-//  if (firstImage) {
-//    return {
-//      width: firstImage.width,
-//      height: firstImage.height
-//    };
-//  }
-//  return { width: 0, height: 0 }; // Retourne 0, 0 si aucune image n'existe dans la galerie
-//}
-
 // Fonction pour afficher le mode édition si l'utilisateur est connecté " éddit banner ""
 function displayAdminMode() {
   if (localStorage.authToken) {
