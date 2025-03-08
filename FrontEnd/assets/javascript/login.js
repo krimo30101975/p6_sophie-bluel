@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     } else {
       authLink.textContent = "login";
-      authLink.href = "/FrontEnd/login.html";
+      authLink.href = "login.html";
     }
   }
 
