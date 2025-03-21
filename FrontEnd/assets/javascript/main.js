@@ -1,474 +1,447 @@
-// fonction  pour récupérer les travaux ( projets ) 
-async function getWorks(filter) {
-  document.querySelector(".gallery").innerHTML = ""; // Vide la galerie avant de charger de nouvelles images
-  const url = "http://localhost:5678/api/works"; // Déclaration de l'URL de l'API
-  try {
-    const response = await fetch(url); // Effectue une requête HTTP GET vers l'URL
-    if (!response.ok) throw new Error(`Response status: ${response.status}`);
-    const json = await response.json();
-    
-    // Filtrage des projets selon la catégorie sélectionnée
-    const filteredWorks = filter ? json.filter((data) => data.categoryId === filter) : json;
-    filteredWorks.forEach(setFigure);
-  } catch (error) {
-    console.error("Erreur lors de la requête :", error.message);
+// ========================= CONFIGURATION =========================
+const config = {
+  api: {
+    works: "http://localhost:5678/api/works",
+    categories: "http://localhost:5678/api/categories"
+  },
+  selectors: {
+    gallery: ".gallery",
+    filterGallery: ".filtreGallery",
+    portfolioTitle: "#portfolio h2"
+  },
+  elements: {
+    gallery: null,
+    filterGallery: null,
+    portfolioTitle: null,
+    modalOverlay: null
+  },
+  styles: {
+    image: "width: 100%; height: auto; object-fit: cover;",
+    editButton: "margin: 70px 0 50px 10px; border: none; background-color: white; cursor: pointer;",
+    modalOverlay: "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.3); display: none; justify-content: center; align-items: center;",
+    modal: "width: 610px; height: 688px; background-color: white; border-radius: 10px; padding: 40px 80px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2); display: flex; flex-direction: column; justify-content: space-between; align-items: center; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);",
+    modalTitle: "margin-top: 0; text-align: center;",
+    closeButton : "position: absolute; top: 22px; right: 29px; cursor: pointer; font-size: 20px;",
+    backButton : "position: absolute; top: 22px; left: 29px; cursor: pointer; font-size: 20px;",
+    title : "font-size: 26px; font-family: 'Work Sans'; font-weight: 400; color: black; margin: 20px 0;",
+    galleryContainer : "display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; width: 100%; overflow-y: auto; max-height: 688px; margin: 20px 0;",
+    deleteIcon : "position: absolute; top: 5px; right: 5px; width: 17px; height: 17px; display: flex; justify-content: center; align-items: center; font-size: 10px; cursor: pointer; background: black; color: white;",
+    separationHr : "width: 100%; margin: 50px 0 40px 0;",
+    addButton : "font-size: 14px; font-family: 'Syne'; font-weight: 500; display: flex; align-items: center; justify-content: center; cursor: pointer; color: white; background: rgba(29, 97, 84, 1); border: none; border-radius: 60px; width: 237px; height: 38px;",
+    newImg : "width: 100%; object-fit: cover;",
+    sectionTitle : "font-size: 26px; font-family: 'Work Sans'; font-weight: 400; color: black; margin: 30px 0;",
+    form : "width: 100%; height: 500px; display: flex; flex-direction: column; justify-content: space-between;",
+    imageContainer : "display: flex; flex-direction: column; justify-content: space-around; align-items: center; width: 100%; height: 169px; border-radius: 3px; background-color: rgba(232, 241, 246, 1);",
+    imageIcon : "padding-top: 15px; font-size: 76px; color: rgba(185, 197, 204, 1);",
+    uploadInfo : "font-size: 10px; font-family: 'Work Sans'; font-weight: 400; padding-bottom: 15px; color: rgba(68, 68, 68, 1);",
+    previewImage : "display: none; height: 100%;",
+    uploadLabel : "display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; font-family: 'Work Sans'; font-weight: 500; color: rgba(48, 102, 133, 1); background: rgba(203, 214, 220, 1); border: none; border-radius: 60px; width: 237px; height: 38px;",
+    titleLabel : "margin-top: 20px; font-size: 14px; line-height: 16.42px; font-family: 'Work Sans'; font-weight: 500; color: rgba(61, 61, 61, 1); background-color: white !important; outline: none;",
+    titleInput : "font-size: 14px; font-family: 'Work Sans'; font-weight: 500; color: rgba(61, 61, 61, 1); width: 100%; height: 51px; border: none; box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.1); background-color: white !important; outline: none; appearance: none; -webkit-appearance: none;",
+    categoryLabel : "margin-top: 20px; font-size: 14px; line-height: 16.42px; font-family: 'Work Sans'; font-weight: 500; color: rgba(61, 61, 61, 1);",
+    categorySelect : "font-size: 14px; font-family: 'Work Sans'; font-weight: 500; color: rgba(61, 61, 61, 1); width: 100%; height: 51px; border: none; box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.1);",
+    submitButton : "font-size: 14px; font-family: 'Syne'; font-weight: 500; display: flex; align-items: center; justify-content: center; cursor: pointer; color: white; background: rgba(167, 167, 167, 1); border: none; border-radius: 60px; width: 237px; height: 32px; transform: translate(45%, 0%);",
+  },
+  classes: {
+    filter: "filter",
+    active: "active",
+    modeEdit: "mode__edit",
+    editButton: "edit__button",
+    modalOverlay : "modal__overlay",
+    modal : "modal",
+    closeButton : "closeButton",
+    galleryContainer : "gallery-container",
+    imgWrapper : "image-wrapper",
+    deleteIcon : "delete-icon",
+    addButton : "add-button",
+    form : "add-image-form",
+    imageContainer : "image-container",
+    imageIcon : "fa-regular fa-image",
+    uploadLabel : "upload-label",
+    previewImage : "preview-image",
+    titleContainer : "input-container",
+    categoryContainer : "input-container",
   }
-}
-getWorks();
+};
 
-// Fonction pour afficher une image dans la galerie
-function setFigure(data) {
-  const figure = document.createElement("figure"); // Crée une balise figure
-  figure.innerHTML = `<img src="${data.imageUrl}" alt="${data.title}"><figcaption>${data.title}</figcaption>`; 
-  document.querySelector(".gallery").append(figure); // Ajoute l'image dans la galerie
-}
-
-// fonction pour récupérer les cathegories 
-async function getCategories() {
-  const url = "http://localhost:5678/api/categories"; // Déclaration de l'URL de l'API qui sera appelée
-  try {
-    const response = await fetch(url); // Effectue une requête HTTP GET vers l'URL
-
-    // Vérifie si la réponse est valide (code HTTP 200-299)
-    if (!response.ok) throw new Error(`Response status: ${response.status}`); // Si ce n'est pas le cas, lève une erreur avec le code de statut
-    const json = await response.json(); // Convertit la réponse JSON en un objet JavaScript exploitable
-    json.forEach(setFilter);
-  } catch (error) {
-    console.error("Erreur lors de la requête :", error.message);
-  }
-}
-getCategories();
-
-// Fonction pour afficher les filtres de catégories
-function setFilter(data) {
-  const div = document.createElement("div"); // Crée un élément div
-  div.className = "filter";
-  div.dataset.id = data.id;
-  div.addEventListener("click", () => getWorks(data.id)); // Ajoute un événement de filtrage au clic
-  div.innerHTML = `${data.name}`; 
-  document.querySelector(".filtreGallery").append(div);
-}
-// Création de la div "Tous"
-const divTous = document.createElement("div");
-divTous.className = "tous";
-divTous.textContent = "Tous"; // Texte du filtre
-divTous.addEventListener("click", () => getWorks()); // Ajout de l'événement au clic
-
-// Ajout au conteneur des filtres
-document.querySelector(".filtreGallery").prepend(divTous); // Ajoute "Tous" en premier
-
-// changer la couleur en selecteur
+// ========================= INIT AU CHARGEMENT =========================
 document.addEventListener("DOMContentLoaded", () => {
-  const filtreGallery = document.querySelector(".filtreGallery");
-  if (!filtreGallery) {  // Vérifier si l'élément existe
-    console.error("L'élément .filtreGallery est introuvable !");
-    return;
-  }
+  // Sélections DOM regroupées ici
+  config.elements = {
+    gallery: document.querySelector(config.selectors.gallery),
+    filterGallery: document.querySelector(config.selectors.filterGallery),
+    portfolioTitle: document.querySelector(config.selectors.portfolioTitle)
+  };
 
-  const children = filtreGallery.querySelectorAll("div"); // Sélectionner tous les enfants directs de .filtreGallery
-
-  if (children.length > 0) { // Vérifier s'il y a des enfants et activer le premier par défaut
-    children[0].classList.add("active");
-  }
-  filtreGallery.addEventListener("click", (event) => {  // Gestion du clic pour activer/désactiver les filtres
-    if (event.target !== filtreGallery && event.target.tagName === "DIV") {
-
-      const children = filtreGallery.querySelectorAll("div"); // Recalcule la liste des enfants au moment du clic, au cas où l'HTML a changé
-
-      children.forEach(c => c.classList.remove("active")); // Supprime la classe active de tous les enfants
-
-      event.target.classList.add("active"); // Ajoute la classe active au nouvel élément cliqué
-    }
-  });
-  function displayFiltreGallery() {
-    if (localStorage.authToken) {
-      filtreGallery.style = "display : none";
-    }
-  }
-  displayFiltreGallery();
+  getWorks();
+  getCategories();
+  setupTousFilter();
+  setupFilterActiveStyle();
+  hideFiltersIfLoggedIn();
+  displayAdminBanner();
 });
-// Fonction pour afficher le mode édition si l'utilisateur est connecté " éddit banner ""
-function displayAdminMode() {
-  if (localStorage.authToken) {
-    const editBanner = document.createElement("div");
-    editBanner.className = "mode__edit";
-    editBanner.innerHTML = '<p><i class="fa-regular fa-pen-to-square"></i> Mode édition</p>';
-    document.body.prepend(editBanner);
+
+// ========================= 1. VARIABLES GLOBALES =========================
+const gallery = document.querySelector(".gallery");
+const modal = document.getElementById("modal");
+const openModalBtn = document.getElementById("openModalBtn");
+const closeModalBtn = document.querySelector(".closeModalBtn");
+const addPhotoBtn = document.querySelector(".addPhotoBtn");
+const formContainer = document.querySelector(".formContainer");
+const uploadSection = document.querySelector(".uploadSection");
+const imageInput = document.getElementById("imageInput");
+const imagePreview = document.getElementById("imagePreview");
+const titleInput = document.getElementById("titleInput");
+const categorySelect = document.getElementById("categorySelect");
+const addProjectBtn = document.getElementById("addProjectBtn");
+
+
+// ========================= CHARGEMENT DES PROJETS =========================
+async function getWorks(filter) {
+  config.elements.gallery.innerHTML = "";
+  try {
+    const response = await fetch(config.api.works);
+    if (!response.ok) throw new Error(`Statut : ${response.status}`);
+    const works = await response.json();
+    const filtered = filter ? works.filter(work => work.categoryId === filter) : works;
+    filtered.forEach(createFigure);
+  } catch (error) {
+    console.error("Erreur chargement des travaux :", error.message);
   }
 }
-displayAdminMode();
 
-// Fonction pour créer la Modale
-document.addEventListener("DOMContentLoaded", () => {
-  const modalOverlay = document.createElement("div");
-  modalOverlay.className = "modal__overlay";
-  modalOverlay.style = "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.3); display: none; justify-content: center; align-items: center;";
-  document.body.append(modalOverlay);
-  
-  // Fonction pour créer la Modale galerie
-  function closeModal(modal) {
-    modal.remove(); // Supprime la modale actuelle
-    if (!document.querySelector(".modal")) {
-      modalOverlay.style.display = "none"; // Cache l'overlay si plus de modale ouverte
-    }
+// ========================= AFFICHAGE DES FIGURES =========================
+function createFigure(data) {
+  const figure = document.createElement("figure");
+  figure.style = config.styles.figure;
+  figure.innerHTML = `<img src="${data.imageUrl}" alt="${data.title}" style="${config.styles.image}"><figcaption>${data.title}</figcaption>`;
+  config.elements.gallery.appendChild(figure);
+}
+
+// ========================= CHARGEMENT DES CATÉGORIES =========================
+async function getCategories() {
+  try {
+    const response = await fetch(config.api.categories);
+    if (!response.ok) throw new Error(`Statut : ${response.status}`);
+    const categories = await response.json();
+    categories.forEach(createFilter);
+  } catch (error) {
+    console.error("Erreur chargement catégories :", error.message);
   }
-  function createGalleryModal() {
-    modalOverlay.style.display = "flex";
+}
 
-    const modal = document.createElement("div");
-    modal.className = "modal";
-    modal.style.cssText = "width: 610px; height: 688px; background-color: white; border-radius: 10px; padding: 40px 80px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2); display: flex; flex-direction: column; justify-content: space-between; align-items: center; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);";
+// ========================= CRÉATION DES FILTRES =========================
+function createFilter(category) {
+  const div = document.createElement("div");
+  div.className = config.classes.filter;
+  div.dataset.id = category.id;
+  div.textContent = category.name;
+  div.addEventListener("click", (e) => {
+    getWorks(category.id);
+    setActiveFilter(e.target);
+  });
+  config.elements.filterGallery.appendChild(div);
+}
 
-    // Fermer la modale en cliquant sur l'overlay
-    modalOverlay.addEventListener("click", (event) => {
-        if (event.target === modalOverlay) { 
-            modal.style.display = "none"; // Cache la modale
-            modalOverlay.style.display = "none"; // Cache l'overlay
-        }
-    });
+// ========================= FILTRE "TOUS" =========================
+function setupTousFilter() {
+  const divTous = document.createElement("div");
+  divTous.className = config.classes.filter;
+  divTous.textContent = "Tous";
+  divTous.addEventListener("click", (e) => {
+    getWorks();
+    setActiveFilter(e.target);
+  });
+  config.elements.filterGallery.prepend(divTous);
+}
 
-    // Bouton fermeture
-    const closeButton = document.createElement("span");
-    closeButton.className = "closeButton";
-    closeButton.innerHTML = '<i class="fa-solid fa-xmark"></i>';
-    closeButton.style = "position: absolute; top: 22px; right: 29px; cursor: pointer; font-size: 20px;";
-    closeButton.addEventListener("click", () => closeModal(modal));
+// ========================= STYLE FILTRES ACTIFS =========================
+function setActiveFilter(clickedElement) {
+  const filters = config.elements.filterGallery.querySelectorAll(`.${config.classes.filter}`);
+  filters.forEach(f => f.classList.remove(config.classes.active));
+  clickedElement.classList.add(config.classes.active);
+}
 
-    const title = document.createElement("h2");
-    title.textContent = "Galerie photo";
-    title.style = "font-size : 26px; font-family : 'Work Sans'; font-weight : 400; color : black; margin : 20px 0;";
+function setupFilterActiveStyle() {
+  const filters = config.elements.filterGallery?.querySelectorAll("div") || [];
+  if (filters.length > 0) filters[0].classList.add(config.classes.active);
+}
 
-    const galleryContainer = document.createElement("div");
-    galleryContainer.className = "gallery-container";
-    galleryContainer.style = "display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; width: 100%; overflow-y: auto; max-height: 688px; margin: 20px 0 20px 0;";
+// ========================= AFFICHAGE/ MASQUAGE FILTRES =========================
+function hideFiltersIfLoggedIn() {
+  if (localStorage.authToken) {
+    config.elements.filterGallery.style.display = "none";
+  }
+}
 
-    // Fonction pour mettre à jour la galerie dans la modale
-    function updateModalGallery() {
-      createGalleryModal(); // Recharger les images dans la modale
-    }
-    async function loadImages() {
-      // vérifions si un token est disponible dans localStorage
-      const authToken = localStorage.getItem('authToken');
-      if (!authToken) {
-        alert("Token d'authentification manquant ou expiré.");
-        return;
+// ========================= MODE ADMIN =========================
+function displayAdminBanner() {
+  if (localStorage.authToken) {
+    const banner = document.createElement("div");
+    banner.className = config.classes.modeEdit;
+    banner.innerHTML = '<p><i class="fa-regular fa-pen-to-square"></i> Mode édition</p>';
+    document.body.prepend(banner);
+  }
+}
+
+// ========================= MODALE OVERLAY =========================
+document.addEventListener("DOMContentLoaded", () => {
+
+  config.elements.portfolioTitle = document.querySelector(config.selectors.portfolioTitle);
+  
+  function createElement(tag, className = "", styleString = "", innerHTML = "") {
+    const element = document.createElement(tag);
+    if (className) element.className = className;
+    if (styleString) Object.assign(element.style, styleToObject(styleString));
+    if (innerHTML) element.innerHTML = innerHTML;
+    return element;
+  }
+  
+  function styleToObject(styleString) {
+    const styleObj = {};
+    if (typeof styleString !== "string") return styleObj;
+    styleString.split(";").forEach(style => {
+      const [key, value] = style.split(":").map(s => s.trim());
+      if (key && value) {
+        // camelCase pour compatibilité avec element.style
+        const camelKey = key.replace(/-([a-z])/g, (_, char) => char.toUpperCase());
+        styleObj[camelKey] = value;
       }
-      const response = await fetch("http://localhost:5678/api/works");
-      if (!response.ok) throw new Error("Erreur lors de la récupération des images");
-      const json = await response.json();
+    });
+    return styleObj;
+  }
 
-      galleryContainer.innerHTML = "";// Vide la galerie avant de recharger les images
+  const createOverlay = () => {
+    let overlay = document.getElementById("modalOverlay");
+    if (overlay) overlay.remove();
+    overlay = createElement("div", config.classes.modalOverlay, config.styles.modalOverlay);
+    overlay.id = "modalOverlay";
+    document.body.appendChild(overlay);
+    config.elements.modalOverlay = overlay;
+    return overlay;
+  };
 
-      json.forEach((data) => {
-        // Conteneur de l'image
-        const imgWrapper = document.createElement("div");
-        imgWrapper.className = "image-wrapper";
-        imgWrapper.style.position = "relative"; // Permet de positionner l'icône corbeille
-        // Image
-        const newImg = document.createElement("img");
-        newImg.src = data.imageUrl;
-        newImg.alt = data.title;
-        newImg.style = "width: 100%; object-fit: cover;";
+  const modalOverlay = createOverlay();
 
-        // bouton corbeille image
-        const deleteIcon = document.createElement("div");
-        deleteIcon.innerHTML = '<i class="fa-solid fa-trash-can"></i>';
-        deleteIcon.className = "delete-icon";
-        deleteIcon.style = "position: absolute; top: 5px; right: 5px; width: 17px; height: 17px; display: flex; justify-content: center; align-items: center; font-size: 10px; cursor: pointer; background: black; color: white;";
+  const closeModal = () => {
+    modalOverlay.innerHTML = "";
+    modalOverlay.style.display = "none";
+  };
 
-        // Événement pour supprimer l'image
-        deleteIcon.addEventListener("click", async () => {
-          const confirmDelete = confirm("Êtes-vous sûr de vouloir supprimer cette image ?");
-          if (confirmDelete) {
-            try {
-              const response = await fetch(`http://localhost:5678/api/works/${data.id}`, {
-                method: "DELETE",
-                headers: {
-                  "Authorization": `Bearer ${authToken}`, // Ajoute le token à la requête DELETE
-                },
-              });
-              if (!response.ok) {
-                throw new Error("Erreur lors de la suppression de l'image.");
+  const createCloseButton = () => {
+    const btn = createElement("span", config.classes.closeButton, config.styles.closeButton, '<i class="fa-solid fa-xmark"></i>');
+    btn.addEventListener("click", closeModal);
+    return btn;
+  };
+
+  // ========================= MODALE GALERIE =========================
+  function createGalleryModal () {
+    modalOverlay.innerHTML = "";
+    modalOverlay.style.display = "flex";
+    const modal = createElement("div", config.classes.modal, config.styles.modal);
+    modalOverlay.onclick = (e) => {
+      if (e.target === modalOverlay) closeModal();
+    };
+
+    const title = createElement("h2", "", config.styles.title);
+    title.textContent = "Galerie photo";
+    const galleryContainer = createElement("div", config.classes.galleryContainer, config.styles.galleryContainer);
+
+    // Fonction pour charger les images dans la galerie
+    const loadImages = async () => {
+      const token = localStorage.getItem("authToken");
+      if (!token) return alert("Token manquant.");
+      try {
+        const res = await fetch(config.api.works);
+        const images = await res.json();
+        galleryContainer.innerHTML = "";
+        images.forEach(data => {
+          const wrapper = createElement("div", config.classes.imgWrapper, "position: relative;");
+          const img = document.createElement("img");
+          img.src = data.imageUrl;
+          img.alt = data.title;
+          img.dataset.id = data.id;
+          const deleteIcon = createElement("div", config.classes.deleteIcon, config.styles.deleteIcon, '<i class="fa-solid fa-trash-can"></i>');
+          deleteIcon.addEventListener("click", async () => {
+            if (confirm("Supprimer cette image ?")) {
+              try {
+                const del = await fetch(`${config.api.works}/${data.id}`, {
+                  method: "DELETE",
+                  headers: { Authorization: `Bearer ${token}` }
+                });
+                if (del.ok) {
+                  wrapper.remove();
+
+                  await getWorks(); // Recharge la galerie sans recharger la page
+                }
+              } catch (err) {
+                alert("Erreur suppression.");
               }
-              imgWrapper.remove(); // Supprime l'image de la modale
-
-              await getWorks(); // Recharge la galerie sans recharger la page
-              updateModalGallery(); // Met à jour la galerie dans la modale
-            } catch (error) {
-              console.error(error.message);
-              alert("Une erreur est survenue lors de la suppression.");
             }
-          }
+          });
+          wrapper.append(img, deleteIcon);
+          galleryContainer.appendChild(wrapper);
         });
-        // Ajoute l'image et l'icône de suppression dans le wrapper
-        imgWrapper.appendChild(newImg);
-        imgWrapper.appendChild(deleteIcon);
-        galleryContainer.appendChild(imgWrapper);// Ajoute l'image complète à la galerie
-      });
-    }
-
+      } catch (err) {
+        console.error(err.message);
+      }
+    };
     loadImages();
 
-    /** LIGNE HORIZONTALE **/
-    const separationHr = document.createElement("hr");
-    separationHr.style = "width: 100%; margin: 50px 0 40px 0";
-
-    // bouton vers le formulaire
-    const addButton = document.createElement("button");
+    const addButton = createElement("button", config.classes.addButton, config.styles.addButton);
     addButton.textContent = "Ajouter une image";
-    addButton.className = "add-button";
-    addButton.style = "font-Size : 14px; font-family : 'Syne'; font-weight : 500; display : flex; align-items : center; justify-content : center; cursor : pointer; color : white; background : rgba(29, 97, 84, 1); border : none; border-radius : 60px; width : 237px; height : 38px";
-    addButton.addEventListener("click", () => {
-      closeModal(modal);
-      createFormModal();
-    });
-    modal.append(closeButton, title, galleryContainer, separationHr, addButton);
-    modalOverlay.append(modal);
-  }
-  // Fonction pour créer la Modale Formulaire
-  function createFormModal() {
+    addButton.onclick = () => createFormModal();
+
+    modal.append(createCloseButton(), title, galleryContainer, createElement("hr", "", config.styles.separationHr), addButton);
+    modalOverlay.appendChild(modal);
+  };
+
+  // ========================= MODALE FORM =========================
+  function createFormModal () {
+    modalOverlay.innerHTML = "";
     modalOverlay.style.display = "flex";
-    const modal = document.createElement("div");
-    modal.className = "modal";
-    modal.style.cssText = "width: 610px; height: 688px; background-color: white; border-radius: 10px; padding: 40px 80px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2); display: flex; flex-direction: column; justify-content: space-between; align-items: center; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);";
+    const modal = createElement("div", config.classes.modal, config.styles.modal);
 
-    // Bouton retour
-    const backButton = document.createElement("span");
-    backButton.className = "backButton";
-    backButton.innerHTML = '<i class="fa-solid fa-arrow-left"></i>';
-    backButton.style = "position: absolute; top: 10px; left: 10px; cursor: pointer; font-size: 20px; background: none; border: none;";
-    backButton.addEventListener("click", () => {
-      closeModal(modal);
+    const backButton = createElement("span", "", config.styles.backButton, '<i class="fa-solid fa-arrow-left"></i>');
+    backButton.onclick = () => {
+      closeModal();
       createGalleryModal();
-    });
+    };
 
-    // Bouton fermeture
-    const closeButton = document.createElement("span");
-    closeButton.className = "closeButton";
-    closeButton.innerHTML = '<i class="fa-solid fa-xmark"></i>';
-    closeButton.style = "position: absolute; top: 22px; right: 29px; cursor: pointer; font-size: 20px;";
-    closeButton.addEventListener("click", () => closeModal(modal));
-
-    // titre modal ajout image
-    const sectionTitle = document.createElement("h2");
+    const closeButton = createCloseButton();
+    const sectionTitle = createElement("h2", "", config.styles.sectionTitle);
     sectionTitle.textContent = "Ajout photo";
-    sectionTitle.style = "fontSize : 26px; font-family : 'Work Sans'; font-weight : 400; color : black; margin : 30px 0;";
+    const form = createElement("form", config.classes.form, config.styles.form);
 
-    const form = document.createElement("form");
-    form.className = "add-image-form";
-    form.style.cssText = "width: 100%; height: 500px; display: flex; flex-direction: column; justify-content: space-between;"
-
-    // Fonction pour récupérer la taille des images de la galerie
-    function getGalleryImageSize() {
-      const firstImage = document.querySelector(".gallery img");
-      if (firstImage) {
-        return {
-          width: firstImage.clientWidth,
-          height: firstImage.clientHeight
-        };
-      }
-      return { width: 200, height: 150 }; // Taille par défaut
-    }
-
-    // Conteneur pour l’image
-    const imageContainer = document.createElement("div");
-    imageContainer.className = "image-container";
-    imageContainer.style = "display : flex; flex-direction: column; justify-content: space-around; align-items: center; width : 100%; height : 169px; border-radius : 3px; background-color : rgba(232, 241, 246, 1)";
-
-    const imageIcon = document.createElement("i");
-    imageIcon.className = "fa-regular fa-image"; // Icône paysage
-    imageIcon.style = "width: 76px; height : 76px; font-size : 68px; color : rgba(185, 197, 204, 1);";
-
-    const previewImage = document.createElement("img");
-    previewImage.className = "preview-image";
+    const imageContainer = createElement("div", config.classes.imageContainer, config.styles.imageContainer);
+    const imageIcon = createElement("i", config.classes.imageIcon, config.styles.imageIcon);
+    const previewImage = createElement("img", config.classes.previewImage, config.styles.previewImage);
     previewImage.style.display = "none";
 
     const fileInput = document.createElement("input");
     fileInput.type = "file";
     fileInput.accept = "image/*";
-    fileInput.id = "fileInput"; // Ajout de l'ID
+    fileInput.id = "fileInput";
     fileInput.name = "image"; // Ajout du name
     fileInput.style.display = "none";
-    fileInput.required = true;
 
-    const uploadLabel = document.createElement("label");
-    uploadLabel.setAttribute("for", "fileInput"); // Lier le label à l'input
-    uploadLabel.className = "upload-label";
+    const uploadLabel = createElement("label", config.classes.uploadLabel, config.styles.uploadLabel);
     uploadLabel.textContent = "+ Ajouter photo";
-    uploadLabel.style = "display : flex; align-items : center; justify-content : center; cursor : pointer; font-Size : 14px; font-family : 'Work Sans'; font-weight : 500; color : rgba(48, 102, 133, 1); background : rgba(203, 214, 220, 1); border : none; border-radius : 60px; width : 237px; height : 38px;";
+    uploadLabel.setAttribute("for", "fileInput"); // Lier le label à l'input
 
-    const uploadParagraph = document.createElement("p");
-    uploadParagraph.textContent = "JPG, PNG : 4mo max";
-    uploadParagraph.style = "font-Size : 10px; font-family : 'Work Sans'; font-weight : 400; color : rgba(68, 68, 68, 1);";
+    const uploadInfo = document.createElement("p");
+    uploadInfo.textContent = "jpg, png : 4mo max";
+    uploadInfo.style = config.styles.uploadInfo;
 
     // Prévisualisation de l’image
-    fileInput.addEventListener("change", (event) => {
-      const file = event.target.files[0];
+    fileInput.onchange = (e) => {
+      const file = e.target.files[0];
       if (file) {
         const reader = new FileReader();
-        reader.onload = (e) => {
-          previewImage.src = e.target.result;
+        reader.onload = (evt) => {
+          previewImage.src = evt.target.result;
           previewImage.style.display = "block";
-          previewImage.style.height = "100%"; // Image prend toute la hauteur
-          imageIcon.style.display = "none";
-          uploadLabel.style.display = "none";
-          uploadParagraph.style.display = "none";
+          imageIcon.style.display = uploadLabel.style.display = uploadInfo.style.display = "none";
         };
         reader.readAsDataURL(file);
       }
       checkFormValidity();
-    });
-    imageContainer.append(imageIcon, previewImage, uploadLabel, uploadParagraph, fileInput);
+    };
+
+    imageContainer.append(imageIcon, previewImage, uploadLabel, uploadInfo, fileInput);
 
     // Champ titre
-    const titleContainer = document.createElement("div");
-    titleContainer.className = "input-container";
-
     const titleLabel = document.createElement("label");
     titleLabel.setAttribute("for", "titleInput");
     titleLabel.textContent = "Titre";
-    titleLabel.style = "margin-top : 20px; font-Size : 14px; line-height : 16.42px font-family : 'Work Sans'; font-weight : 500; color : rgba(61, 61, 61, 1);";
+    titleLabel.style = config.styles.titleLabel;
 
     const titleInput = document.createElement("input");
     titleInput.type = "text";
-    titleInput.id = "titleInput"; 
-    titleInput.style = "font-Size : 14px; font-family : 'Work Sans'; font-weight : 500; color : rgba(61, 61, 61, 1); width : 100%; height : 51px; border : none; box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.1)";
+    titleInput.id = "titleInput";
+    titleInput.style = config.styles.titleInput;
     titleInput.required = true;
-    titleContainer.append(titleLabel, titleInput);
 
     // Sélection de la catégorie
-    const categoryContainer = document.createElement("div");
-    categoryContainer.className = "input-container";
-
     const categoryLabel = document.createElement("label");
     categoryLabel.setAttribute("for", "categorySelect");
     categoryLabel.textContent = "Catégorie";
-    categoryLabel.style = "margin-top : 20px; font-Size : 14px; line-height : 16.42px; font-family : 'Work Sans'; font-weight : 500; color : rgba(61, 61, 61, 1);";
-    
+    categoryLabel.style = config.styles.categoryLabel;
+
     const categorySelect = document.createElement("select");
-    categorySelect.id = "categorySelect"; // Ajout de l'ID
+    categorySelect.id = "categorySelect";
     categorySelect.name = "category"; // Ajout du name
     categorySelect.required = true;
-    categorySelect.style = "font-Size : 14px; font-family : 'Work Sans'; font-weight : 500; color : rgba(61, 61, 61, 1); width : 100%; height : 51px; border : none; box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.1)";
-    
-    const defaultOption = document.createElement("option");
-    defaultOption.value = "";
-    defaultOption.textContent = "";
-    defaultOption.disabled = true;
-    defaultOption.selected = true;
-    categorySelect.appendChild(defaultOption);  
+    categorySelect.style = config.styles.categorySelect;
 
-    async function loadCategories() {  // Ajout des catégories depuis l'API
+    const defaultOpt = new Option("", "", true, true);
+    defaultOpt.disabled = true;
+    categorySelect.appendChild(defaultOpt);
+
+    const loadCategories = async () => { // Ajout des catégories depuis l'API
       try {
-        const response = await fetch("http://localhost:5678/api/categories");
-        if (!response.ok) throw new Error("Erreur lors de la récupération des catégories");
-        const categories = await response.json();
-
+        const res = await fetch(config.api.categories);
+        const cats = await res.json();
         categorySelect.innerHTML = "";
-        categorySelect.appendChild(defaultOption);
-
-        categories.forEach(category => {
-          const option = document.createElement("option");
-          option.value = category.id;
-          option.textContent = category.name;
-          categorySelect.appendChild(option);
-        });
-      } catch (error) {
-        console.error(error.message);
+        categorySelect.appendChild(defaultOpt);
+        cats.forEach(cat => categorySelect.appendChild(new Option(cat.name, cat.id)));
+      } catch (err) {
+        console.error(err.message);
       }
-    }
+    };
     loadCategories();
-    // LIGNE HORIZONTALE
-    const separationHr = document.createElement("hr");
-    separationHr.style = "width: 100%; margin: 50px 0 30px 0";
+
     // BOUTON VALIDER 
     const submitButton = document.createElement("button");
-    submitButton.innerText = "Valider";
+    submitButton.textContent = "Valider";
     submitButton.id = "submitButton"; // Ajout de l'ID
     submitButton.type = "submit";
     submitButton.disabled = true; // Désactivé au début
-    submitButton.style = "font-Size : 14px; font-family : 'Syne'; font-weight : 500; margin : 0, auto; display : flex; align-items : center; justify-content : center; cursor : pointer; color : white; border : none; border-radius : 60px; width : 237px; height : 38px; transform: translate(45%, 0%);";
-    submitButton.style.backgroundColor = "rgba(167, 167, 167, 1)"; // Gris par défaut
-    submitButton.style.color = "white";
+    submitButton.style = config.styles.submitButton;
 
-    function checkFormValidity() {  // Vérification du formulaire avant validation
-      if (fileInput.files.length > 0 && titleInput.value.trim() !== "" && categorySelect.value !== "") {
-        submitButton.style.backgroundColor = "rgba(29, 97, 84, 1)";
-        submitButton.disabled = false;
-      } else {
-        submitButton.style.backgroundColor = "rgba(203, 214, 220, 1)";
-        submitButton.disabled = true;
-      }
-    }
-  // Vérification du formulaire avant validation
-    form.append(imageContainer, titleLabel, titleInput, categoryLabel, categorySelect, separationHr, submitButton);
+    // Vérification du formulaire avant validation
+    const checkFormValidity = () => {
+      submitButton.disabled = !(fileInput.files[0] && titleInput.value && categorySelect.value);
+      submitButton.style.backgroundColor = submitButton.disabled ? "rgba(203, 214, 220, 1)" : "rgba(29, 97, 84, 1)";
+    };
 
-    titleInput.addEventListener("input", checkFormValidity);
-    categorySelect.addEventListener("change", checkFormValidity);
-  
-    submitButton.addEventListener("click", async (event) => { // Événement sur le bouton submit
-      event.preventDefault();
-  
-      // Vérification des champs
-      if (!fileInput.files[0] || !titleInput.value || !categorySelect.value) {
-        alert("Veuillez remplir tous les champs avant de soumettre.");
-        return;
-      }
+    [titleInput, categorySelect].forEach(el => el.addEventListener("input", checkFormValidity));
 
-      // Récupérer la taille des images de la galerie
-      const { width, height } = getGalleryImageSize();
+    submitButton.onclick = async (e) => {
+      e.preventDefault();
+      if (!fileInput.files[0] || !titleInput.value || !categorySelect.value) return alert("Champs requis");
 
       const formData = new FormData();
       formData.append("image", fileInput.files[0]);
       formData.append("title", titleInput.value.trim());
       formData.append("category", categorySelect.value);
       try {
-        const response = await fetch("http://localhost:5678/api/works", {
+        const res = await fetch(config.api.works, {
           method: "POST",
           body: formData,
-          headers: {
-            Authorization: `Bearer ${localStorage.authToken}`,
-          },
+          headers: { Authorization: `Bearer ${localStorage.authToken}` }
         });
-
-        if (!response.ok) {
-          throw new Error("Erreur lors de l'envoi du formulaire.");
-        }
-        closeModal(modal);
-        
-        await getWorks(); // Recharge la galerie après l'ajout
-
-        // Une fois les données rechargées, tu dois appliquer la taille des images
-        const newImage = document.createElement("img");
-        newImage.src = URL.createObjectURL(fileInput.files[0]);
-    
-        // Appliquer la taille récupérée à la nouvelle image
-        newImage.style.width = `${width}px`;
-        newImage.style.height = `${height}px`;
+        if (!res.ok) throw new Error("Échec ajout");
+        closeModal();
+        await getWorks();
         createGalleryModal();
-      } catch (error) {
-        console.error(error.message);
-        alert("Une erreur est survenue. Veuillez réessayer.");
+      } catch (err) {
+        alert("Erreur ajout image");
       }
-    });
+    };
 
+    form.append(imageContainer, titleLabel, titleInput, categoryLabel, categorySelect, createElement("hr", "", config.styles.separationHr), submitButton);
     modal.append(backButton, closeButton, sectionTitle, form);
-    modalOverlay.append(modal);
-    document.body.appendChild(modalOverlay);
-  
-    return modalOverlay;
-  }
-  // Fonction pour afficher le mode édition si l'utilisateur est connecté " éddit banner ""
-  function displayAdminMode() {
-    if (localStorage.authToken) {
-    // Bouton pour ouvrir la Modale Galerie
-    const editButton = document.createElement("button");
-    editButton.className = "edit__button";
-    editButton.innerHTML = '<p><i class="fa-regular fa-pen-to-square"></i> Modifier</p>';
-    editButton.style = "margin: 70px 0 50px 10px; border: none; background-color: white; cursor: pointer;";
-    editButton.addEventListener("click", createGalleryModal); // Ajouter un événement au bouton
-    document.querySelector("#portfolio h2").appendChild(editButton);
+    modalOverlay.appendChild(modal);
+  };
+
+  function displayAdminEdit() {
+    if (localStorage.authToken && config.elements.portfolioTitle) {
+      const editButton = createElement("button", config.classes.editButton, config.styles.editButton, '<i class="fa-regular fa-pen-to-square"></i> Modifier');
+      editButton.onclick = createGalleryModal;
+      config.elements.portfolioTitle.appendChild(editButton);
     }
   }
-  displayAdminMode();
+
+  displayAdminEdit();
 });

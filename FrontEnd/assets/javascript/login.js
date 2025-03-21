@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const token = localStorage.getItem("authToken");
 
   if (authLink) {
-    authLink.style.fontSize = "1em";
+    authLink.style.fontSize = "1.2em";
     authLink.style.fontFamily = "Work Sans";
 
     if (token) {
