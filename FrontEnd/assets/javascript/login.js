@@ -65,7 +65,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }, 1000);
       } else {
         const errorMessage = data.message ? data.message.toLowerCase() : "";
-        messageContainer.textContent = "Identifiants incorrects.";
+        messageContainer.textContent = "Erreur dans l’identifiant ou le mot de passe";
         messageContainer.style.color = "red";
 
         if (errorMessage.includes("password")) {
