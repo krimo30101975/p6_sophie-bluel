@@ -273,6 +273,7 @@ document.addEventListener("DOMContentLoaded", () => {
                   wrapper.remove();
 
                   await getWorks(); // Recharge la galerie sans recharger la page
+                  closeModal();
                 }
               } catch (err) {
                 alert("Erreur suppression.");
@@ -281,6 +282,7 @@ document.addEventListener("DOMContentLoaded", () => {
           });
           wrapper.append(img, deleteIcon);
           galleryContainer.appendChild(wrapper);
+          document.querySelector(".modal");
         });
       } catch (err) {
         console.error(err.message);
@@ -422,9 +424,10 @@ document.addEventListener("DOMContentLoaded", () => {
           headers: { Authorization: `Bearer ${localStorage.authToken}` }
         });
         if (!res.ok) throw new Error("Échec ajout");
-        closeModal();
+
         await getWorks();
         createGalleryModal();
+        closeModal();
       } catch (err) {
         alert("Erreur ajout image");
       }
