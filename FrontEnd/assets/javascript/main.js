@@ -97,15 +97,27 @@ const addProjectBtn = document.getElementById("addProjectBtn");
 
 
 // ========================= CHARGEMENT DES PROJETS =========================
+// Fonction asynchrone pour récupérer et afficher les travaux (works), avec un filtre optionnel
 async function getWorks(filter) {
+  // Vider la galerie avant d'afficher les nouvelles images
   config.elements.gallery.innerHTML = "";
   try {
+    // Effectuer une requête GET vers l'API pour récupérer la liste des travaux
     const response = await fetch(config.api.works);
+
+    // Vérifier si la réponse est correcte (status HTTP 200-299)
     if (!response.ok) throw new Error(`Statut : ${response.status}`);
+
+    // Convertir la réponse en JSON (tableau d'objets)
     const works = await response.json();
+
+    // Convertir la réponse en JSON (tableau d'objets)
     const filtered = filter ? works.filter(work => work.categoryId === filter) : works;
+
+    // Boucler sur les travaux filtrés et les afficher en appelant `createFigure`
     filtered.forEach(createFigure);
   } catch (error) {
+    // En cas d'erreur (réseau, API, etc.), afficher un message d'erreur dans la console
     console.error("Erreur chargement des travaux :", error.message);
   }
 }

@@ -1,7 +1,12 @@
+
 document.addEventListener("DOMContentLoaded", () => {
   // Sélection du lien d'authentification (connexion/déconnexion)
   const authLink = document.querySelector(".a_login");
   const token = localStorage.getItem("authToken");// Récupération du token d'authentification
+  // Vérifier si l'utilisateur est connecté et s'il est sur la page de connexion
+  if (localStorage.getItem("authToken") && window.location.pathname.includes("login.html")) {
+    window.location.replace("index.html"); // Redirige vers la page d'accueil
+  }
 
 
   if (authLink) {
